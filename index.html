@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<header>
+    <h1>Gioca a TRIS!</h1>
+</header>
+
+<body>
+    <!-- <canvas id="game"></canvas> -->
+
+    <div id="board">
+        <div id="row-0" class="row">
+            <div class="square" id="sq-0"></div>
+            <div class="square" id="sq-1"></div>
+            <div class="square" id="sq-2"></div>
+        </div><br>
+        <div id="row-1" class="row">
+            <div class="square" id="sq-3"></div>
+            <div class="square" id="sq-4"></div>
+            <div class="square" id="sq-5"></div>
+        </div><br>
+        <div id="row-2" class="row">
+            <div class="square" id="sq-6"></div>
+            <div class="square" id="sq-7"></div>
+            <div class="square" id="sq-8"></div>
+        </div>
+    </div>
+    <br><br>
+    <div>
+        <div>
+            <label for="team">Scegli il giocatore che inizia:</label>
+            <input type="radio" name="team" id="circle">Circle [O]
+            <input type="radio" name="team" id="cross">Cross [X]
+        </div><br>
+        <button id="start-game-button">Nuovo Gioco</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
