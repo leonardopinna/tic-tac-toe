@@ -1,13 +1,29 @@
 "use strict";
 
-let score = 0;
+// Inizializzazione variabili
 let gameOn = false;
-let interval;
 
 let currentTeam = "";
 let player1 = "";
 let player2 = "";
 
+// Calcolo delle compbinazioni vincenti
+let winComb = [
+  [0, 1, 2],
+  [0, 4, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 4, 6],
+  [2, 5, 8],
+  [3, 4, 5],
+  [6, 7, 8],
+];
+
+winComb.forEach((e, i) => {
+  winComb[i] = e.map((x) => "sq-" + x);
+});
+
+// Inserisce l'immagine nella caselle del gioco in funzione della squadra attuale
 function getImageSource(team) {
   let imageSource = "";
   if (team === "O") {
@@ -18,6 +34,7 @@ function getImageSource(team) {
   return imageSource;
 }
 
+// Cambia il giocatore attuale
 function changePlayer(p1, p2, current) {
   console.log(p1, p2, current);
   if (p1 === current) {
@@ -28,14 +45,11 @@ function changePlayer(p1, p2, current) {
   return current;
 }
 
-function gameloop() {
-  update();
-}
-
+// Aggiorna il gioco: è il motore dell'app
 function update(square) {
-  console.log(currentTeam);
   square.insertAdjacentElement("afterbegin", printImage(getImageSource(currentTeam)));
 
+  // Aggiungo alla casella premuta lo status "clicked" e la classe della squadra
   square.classList.add("clicked");
   square.classList.add(currentTeam);
 
@@ -44,11 +58,14 @@ function update(square) {
   currentTeam = changePlayer(player1, player2, currentTeam);
 }
 
+// Verifica se in un determinato turno, un giocatore ha vinto valutando le combinazioni vincenti e quelle attuali
 function checkWin() {
   // combinazioni: [0, 1, 2], [0, 4, 8], [0, 3, 6], [1, 4, 7], [2, 4, 6], [2, 5, 8], [3, 4, 5], [6, 7, 8]
 
+  // Creazione degli array delle caselle già selezionate, divisi per squadra
   let circleSquareIds = [];
   let crossSquareIds = [];
+  let noWin = true;
 
   let circleSquares = document.querySelectorAll(".O");
   let crossSquares = document.querySelectorAll(".X");
@@ -60,26 +77,11 @@ function checkWin() {
     crossSquareIds.push(square.getAttribute("id"));
   });
 
-  console.log(crossSquareIds, circleSquareIds);
-
-  let winComb = [
-    [0, 1, 2],
-    [0, 4, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 4, 6],
-    [2, 5, 8],
-    [3, 4, 5],
-    [6, 7, 8],
-  ];
-
-  winComb.forEach((e, i) => {
-    winComb[i] = e.map((x) => "sq-" + x);
-  });
-
+  //   confronto tra stato attuale e combinazioni vincenti
   winComb.forEach((comb) => {
     if (hasSubArray(crossSquareIds, comb)) {
       console.log("VITTORIA di X!");
+      noWin = false;
       gameOver(false);
     }
   });
@@ -87,15 +89,18 @@ function checkWin() {
   winComb.forEach((comb) => {
     if (hasSubArray(circleSquareIds, comb)) {
       console.log("VITTORIA di O!");
+      noWin = false;
       gameOver(false);
     }
   });
 
-  if (circleSquareIds.length + crossSquareIds.length === 9) {
+  // in caso di casella finale, se non c'è stato un vincitore si decreta un pareggio
+  if (circleSquareIds.length + crossSquareIds.length === 9 && noWin) {
     gameOver(true);
   }
 }
 
+// funzione che determina se un array "master" contiene una combinazione di elementi dell'array "sub"
 function hasSubArray(master, sub) {
   return sub.every(
     (
@@ -105,6 +110,7 @@ function hasSubArray(master, sub) {
   );
 }
 
+// inserisce un elemento img nel div corrispondente
 function printImage(imgSrc) {
   let img = document.createElement("img");
   img.setAttribute("src", imgSrc);
@@ -114,6 +120,7 @@ function printImage(imgSrc) {
   return img;
 }
 
+// evento click su ogni casella
 document.querySelectorAll(".square").forEach((element) => {
   {
     element.addEventListener("click", () => {
@@ -129,22 +136,24 @@ document.querySelectorAll(".square").forEach((element) => {
 let circleButton = document.getElementById("circle");
 let crossButton = document.getElementById("cross");
 
+// funzione che inizializza una nuova partita
 function intializeNewGame() {
+  // riporta le classi allo stato iniziale
   document.getElementsByTagName("h1")[0].innerHTML = "Gioca a TRIS!";
   document.querySelectorAll(".square").forEach((element) => {
     element.classList.remove("clicked");
     element.classList.remove("O");
     element.classList.remove("X");
   });
+
+  // elimina le immagini inserite nella partita precedente
   let allImages = document.querySelectorAll("img");
-  console.log(allImages);
   for (let index = 0; index < allImages.length; index++) {
     allImages[index].parentNode.removeChild(allImages[index]);
   }
 }
 
-// inizializza lo stato quando si preme il tasto "nuovo gioco"; rimuovere i "disabled buittons" quando creo questa funzione.
-
+// evento click sul tasto nuova partita
 document.getElementById("start-game-button").addEventListener("click", () => {
   intializeNewGame();
   gameOn = true;
@@ -160,6 +169,7 @@ document.getElementById("start-game-button").addEventListener("click", () => {
   currentTeam = player1;
 });
 
+// funzione game over
 function gameOver(isDraw) {
   if (!isDraw) {
     if (player1 === currentTeam) {
